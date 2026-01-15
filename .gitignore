@@ -1,0 +1,25 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+cron.log
+
+# Credentials (로컬 테스트용)
+.env
+
+# 처리된 ID (GitHub Actions에서는 매번 새로 시작)
+processed_ids.json
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# 테스트 파일
+debug*.py
+test_*.py
