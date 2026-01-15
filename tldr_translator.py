@@ -58,13 +58,13 @@ def connect_gmail():
     return mail
 
 
-def search_tldr_emails(mail, days_back=1):
-    """TLDR 뉴스레터 검색"""
+def search_tldr_emails(mail, days_back=0):
+    """TLDR 뉴스레터 검색 - 오늘 날짜만"""
     mail.select("inbox")
 
-    # 날짜 기준 검색
-    since_date = (datetime.now() - timedelta(days=days_back)).strftime("%d-%b-%Y")
-    search_query = f'(FROM "tldrnewsletter.com" SINCE {since_date})'
+    # 오늘 날짜 이메일만 검색 (GitHub Actions에서 중복 방지)
+    today = datetime.now().strftime("%d-%b-%Y")
+    search_query = f'(FROM "tldrnewsletter.com" ON {today})'
 
     status, messages = mail.search(None, search_query)
 
