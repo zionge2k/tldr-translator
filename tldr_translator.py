@@ -58,6 +58,29 @@ def connect_gmail():
     return mail
 
 
+def delete_old_tldr_emails(mail, days_old=30):
+    """30일 지난 TLDR 이메일 삭제"""
+    mail.select("inbox")
+
+    # 30일 전 날짜
+    before_date = (datetime.now() - timedelta(days=days_old)).strftime("%d-%b-%Y")
+    search_query = f'(FROM "tldrnewsletter.com" BEFORE {before_date})'
+
+    status, messages = mail.search(None, search_query)
+
+    if status != "OK" or not messages[0]:
+        return 0
+
+    msg_ids = messages[0].split()
+
+    for msg_id in msg_ids:
+        mail.store(msg_id, '+FLAGS', '\\Deleted')
+
+    mail.expunge()
+
+    return len(msg_ids)
+
+
 def search_tldr_emails(mail, days_back=0):
     """TLDR 뉴스레터 검색 - 오늘 날짜만"""
     mail.select("inbox")
@@ -401,6 +424,11 @@ def main():
             new_count += 1
         else:
             print(f"  Slack 발송 실패")
+
+    # 30일 지난 TLDR 이메일 삭제
+    deleted_count = delete_old_tldr_emails(mail, days_old=30)
+    if deleted_count > 0:
+        print(f"  30일 지난 이메일 {deleted_count}개 삭제")
 
     mail.logout()
     save_processed_ids(processed_ids)
